@@ -357,6 +357,8 @@ extension FolioReader {
 
     /// Closes and save the reader current instance.
     open func close() {
+	let bookBasePath = kApplicationCacheDirectory.appendingPathComponent(kEpubFileDirectory).appendingPathComponent(self.readerContainer?.book.name ?? "decrypted.epub")
+        try? FileManager.default.removeItem(atPath: bookBasePath)
         self.saveReaderState()
         self.isReaderOpen = false
         self.isReaderReady = false
