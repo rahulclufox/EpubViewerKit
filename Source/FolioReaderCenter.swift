@@ -482,8 +482,8 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
         let webHeight = UIScreen.main.bounds.height
         // Inject CSS
         let jsFilePath = Bundle.frameworkBundle().path(forResource: "Bridge", ofType: "js")
-        let cssFilePath = Bundle.frameworkBundle().path(forResource: "Style", ofType: "css")
-        let cssTag = ""//"<link rel=\"stylesheet\" type=\"text/css\" href=\"\(cssFilePath!)\">"
+        let cssFilePath = Bundle.frameworkBundle().path(forResource: "PaginateStyle", ofType: "css")
+        let cssTag = "<link rel=\"stylesheet\" type=\"text/css\" href=\"\(cssFilePath!)\">"
         let jsTag = "<script type=\"text/javascript\" src=\"\(jsFilePath!)\"></script>" +
         "<script type=\"text/javascript\">setMediaOverlayStyleColors(\(mediaOverlayStyleColors))</script>"
         let metaTag = "<meta name='viewport' content='width=device-width,height=\(webHeight),initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
