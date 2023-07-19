@@ -153,7 +153,7 @@ open class FolioReaderPage: UICollectionViewCell, WKNavigationDelegate, UIGestur
             let tempPath = baseURL.path
             let filePath = tempPath + "/" + title
             
-            if title.contains("xhtml") {
+           /* if title.contains("xhtml") {
                 let htmlData = NSString(string: tempHtmlContent).data(using: String.Encoding.utf8.rawValue)
                 let options = [NSAttributedString.DocumentReadingOptionKey.documentType:
                         NSAttributedString.DocumentType.rtfd]
@@ -161,9 +161,9 @@ open class FolioReaderPage: UICollectionViewCell, WKNavigationDelegate, UIGestur
                 let attributedString = try? NSMutableAttributedString(data: htmlData ?? Data(),options: options,documentAttributes: nil)
                 try! attributedString?.string.write(toFile: filePath, atomically: true, encoding: String.Encoding.utf8)
 
-            }else {
+            }else { */
                 try! tempHtmlContent.write(toFile: filePath, atomically: true, encoding: String.Encoding.utf8)
-            }
+           // }
 
             webView?.loadFileURL(URL(fileURLWithPath: filePath), allowingReadAccessTo:URL(fileURLWithPath: baseURL.path.deletingLastPathComponent))
 }
