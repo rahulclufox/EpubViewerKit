@@ -491,7 +491,7 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
         let metaTag = "<meta name=\"viewport\" content=\"width=device-width,height=\(webHeight),initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\" />"
         
         let toInject = "\n\(metaTag)\n\(cssTag)\n\(jsTag)\n</head>"
-        if !html.contains(toInject) {
+        if !html.contains("initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\"") {
             html = html.replacingOccurrences(of: "</head>", with: toInject)
         }
                 
