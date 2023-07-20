@@ -34,7 +34,7 @@ footer, header, hgroup, menu, nav, section {
 html {
     -webkit-text-size-adjust: none; /* Never autoresize text */
     padding: 0 0 !important;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 body {
@@ -272,11 +272,12 @@ h6 {
     line-height: 1.2;
 }
 body {
-    word-break: break-word !important;
-    -webkit-hyphens: auto !important;
-    hyphens: auto !important;
     overflow: -webkit-paged-x !important;
     direction: ltr !important;
+    /*word-break: break-word !important;
+    -webkit-hyphens: auto !important;
+    hyphens: auto !important;
+    */
 }
 p, span, div {
     font-size: 1em;
