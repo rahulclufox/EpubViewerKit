@@ -235,12 +235,12 @@ html.nightMode .highlight-underline {border-bottom: 2px solid rgba(240, 40, 20, 
  * Font classes
  *
  */
-
+/*
 .andada, .andada p, .andada span, .andada div { font-family: "Andada", sans-serif !important; }
 .lato, .lato p, .lato span, .lato div { font-family: "Lato", serif !important; }
 .lora, .lora p, .lora span, .lora div { font-family: "Lora", serif !important; }
 .raleway, .raleway p, .raleway span, .raleway div { font-family: "Raleway", sans-serif !important; }
-
+*/
 html.textSizeOne, .textSizeOne body { font-size: 13px !important; }
 html.textSizeTwo, .textSizeTwo body { font-size: 15px !important; }
 html.textSizeThree, .textSizeThree body { font-size: 17px !important; }
@@ -275,6 +275,8 @@ body {
     word-break: break-word !important;
     -webkit-hyphens: auto !important;
     hyphens: auto !important;
+    overflow: -webkit-paged-x !important;
+    direction: ltr !important;
 }
 p, span, div {
     font-size: 1em;
