@@ -479,11 +479,11 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
 
         let mediaOverlayStyleColors = "\"\(self.readerConfig.mediaOverlayColor.hexString(false))\", \"\(self.readerConfig.mediaOverlayColor.highlightColor().hexString(false))\""
 
-        let webHeight = UIScreen.main.bounds.height
+        let webHeight = cell.webView?.frame.height ?? UIScreen.main.bounds.height
     
         // Inject CSS
         let jsFilePath = Bundle.frameworkBundle().path(forResource: "Bridge", ofType: "js")
-        let cssFilePath = Bundle.frameworkBundle().path(forResource: "PaginateStyle", ofType: "css")
+        let cssFilePath = Bundle.frameworkBundle().path(forResource: "Style", ofType: "css")
         let cssTag = "<link rel=\"stylesheet\" type=\"text/css\" href=\"\(cssFilePath!)\" />"
         let jsTag = "<script type=\"text/javascript\" src=\"\(jsFilePath!)\"></script>" +
         "<script type=\"text/javascript\">setMediaOverlayStyleColors(\(mediaOverlayStyleColors))</script>"
@@ -491,7 +491,9 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
         let metaTag = "<meta name=\"viewport\" content=\"width=device-width,height=\(webHeight),initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\" />"
         
         let toInject = "\n\(metaTag)\n\(cssTag)\n\(jsTag)\n</head>"
-        html = html.replacingOccurrences(of: "</head>", with: toInject)
+        if !html.contains(toInject) {
+            html = html.replacingOccurrences(of: "</head>", with: toInject)
+        }
                 
         // Font class name
         var classes = folioReader.currentFont.cssIdentifier
@@ -504,7 +506,14 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
 
         // Font Size
         classes += " \(folioReader.currentFontSize.cssIdentifier)"
-        if !html.contains(classes) {
+        
+        let pattern = "(<html class=\")[^\"]+\" "
+        let regex = try! NSRegularExpression(pattern: pattern)
+
+        if let match = regex.firstMatch(in: html, options: [], range: NSRange(location: 0, length: html.utf16.count)),
+           let range = Range(match.range, in: html) {
+            html = html.replacingCharacters(in: range, with: "<html class=\"\(classes)\" ")
+        } else {
             html = html.replacingOccurrences(of: "<html ", with: "<html class=\"\(classes)\" ")
         }
 
