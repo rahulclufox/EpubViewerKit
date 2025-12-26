@@ -70,6 +70,7 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
     var nextPageNumber: Int = 0
     var previousPageNumber: Int = 0
     var currentPageNumber: Int = 0
+    var lastPageNumber: Int = 0
     var pageWidth: CGFloat = 0.0
     var pageHeight: CGFloat = 0.0
 
@@ -264,20 +265,22 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
 
     func configureNavBar() {
         let navBackground = folioReader.isNight(self.readerConfig.nightModeNavBackground, self.readerConfig.daysModeNavBackground)
-        let tintColor = readerConfig.tintColor
+        let tintColor = folioReader.isNight(UIColor.white, UIColor.black) //readerConfig.tintColor // Using same as navtext colour
         let navText = folioReader.isNight(UIColor.white, UIColor.black)
         let font = UIFont(name: "Avenir-Light", size: 17)!
-        setTranslucentNavigation(color: navBackground, tintColor: tintColor, titleColor: navText, andFont: font)
+        setTranslucentNavigation(false, color: navBackground, tintColor: tintColor, titleColor: navText, andFont: font)
     }
 
     func configureNavBarButtons() {
 
+        let tintColor = folioReader.isNight(UIColor.white, UIColor.black)
+        
         // Navbar buttons
-        let shareIcon = UIImage(readerImageNamed: "icon-navbar-share")?.ignoreSystemTint(withConfiguration: self.readerConfig)
-        let audioIcon = UIImage(readerImageNamed: "icon-navbar-tts")?.ignoreSystemTint(withConfiguration: self.readerConfig) //man-speech-icon
-        let closeIcon = UIImage(readerImageNamed: "icon-navbar-close")?.ignoreSystemTint(withConfiguration: self.readerConfig)
-        let tocIcon = UIImage(readerImageNamed: "icon-navbar-toc")?.ignoreSystemTint(withConfiguration: self.readerConfig)
-        let fontIcon = UIImage(readerImageNamed: "icon-navbar-font")?.ignoreSystemTint(withConfiguration: self.readerConfig)
+        let shareIcon = UIImage(readerImageNamed: "icon-navbar-share")?.imageTintColor(tintColor) //.ignoreSystemTint(withConfiguration: self.readerConfig)
+        let audioIcon = UIImage(readerImageNamed: "icon-navbar-tts")?.imageTintColor(tintColor) //.ignoreSystemTint(withConfiguration: self.readerConfig) //man-speech-icon
+        let closeIcon = UIImage(readerImageNamed: "icon-navbar-close")?.imageTintColor(tintColor) //.ignoreSystemTint(withConfiguration: self.readerConfig)
+        let tocIcon = UIImage(readerImageNamed: "icon-navbar-toc")?.imageTintColor(tintColor) //.ignoreSystemTint(withConfiguration: self.readerConfig)
+        let fontIcon = UIImage(readerImageNamed: "icon-navbar-font")?.imageTintColor(tintColor) //.ignoreSystemTint(withConfiguration: self.readerConfig)
         let space = 70 as CGFloat
 
         let menu = UIBarButtonItem(image: closeIcon, style: .plain, target: self, action:#selector(closeReader(_:)))
@@ -316,11 +319,13 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
 
         if self.readerConfig.loadSavedPositionForCurrentBook {
             guard let position = folioReader.savedPositionForCurrentBook, let pageNumber = position["pageNumber"] as? Int, pageNumber > 0 else {
+                self.lastPageNumber = self.currentPageNumber
                 self.currentPageNumber = 1
                 return
             }
 
             self.changePageWith(page: pageNumber)
+            self.lastPageNumber = self.currentPageNumber
             self.currentPageNumber = pageNumber
         }
     }
@@ -482,10 +487,22 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
         let webHeight = cell.webView?.frame.height ?? UIScreen.main.bounds.height
     
         // Inject CSS
-        let jsFilePath = Bundle.frameworkBundle().path(forResource: "Bridge", ofType: "js")
-        let cssFilePath = Bundle.frameworkBundle().path(forResource: "Style", ofType: "css")
-        let cssTag = "<link rel=\"stylesheet\" type=\"text/css\" href=\"\(cssFilePath!)\" />"
-        let jsTag = "<script type=\"text/javascript\" src=\"\(jsFilePath!)\"></script>" +
+        
+        
+        
+        let fm = FileManager.default
+
+        if let cssFilePath = Bundle.frameworkBundle().url(forResource: "Style", withExtension: "css") {
+            let cssDst = URL(fileURLWithPath: resource.fullHref.deletingLastPathComponent).appendingPathComponent("Style.css")
+            try? fm.copyItem(at: cssFilePath, to: cssDst)
+        }
+        if let jsFilePath = Bundle.frameworkBundle().url(forResource: "Bridge", withExtension: "js") {
+            let jsDst  = URL(fileURLWithPath: resource.fullHref.deletingLastPathComponent).appendingPathComponent("Bridge.js")
+            try? fm.copyItem(at: jsFilePath, to: jsDst)
+        }
+        
+        let cssTag = "<link rel=\"stylesheet\" type=\"text/css\" href=\"Style.css\" />"
+        let jsTag = "<script type=\"text/javascript\" src=\"Bridge.js\"></script>" +
         "<script type=\"text/javascript\">setMediaOverlayStyleColors(\(mediaOverlayStyleColors))</script>"
         
         let metaTag = "<meta name=\"viewport\" content=\"width=device-width,height=\(webHeight),initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no\" />"
@@ -649,6 +666,14 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
                 if instance.totalPages > 0 {
                     instance.updateCurrentPage()
                     instance.delegate?.pageItemChanged?(instance.getCurrentPageItemNumber())
+                    if (instance.pageScrollDirection == .right && instance.lastPageNumber > instance.currentPageNumber) {
+                        // Going back, reset to last of previous page
+                        if let contentSize = instance.currentPage?.webView?.scrollView.contentSize,
+                           let contentFrame = instance.currentPage?.webView?.scrollView.frame {
+                            instance.currentPage?.webView?.scrollView.setContentOffset(CGPoint(x: contentSize.width - contentFrame.width, y: 0), animated: false)
+                        }
+                        
+                    }
                 }
             } else {
                 self?.scrollScrubber?.scrollViewDidEndDecelerating(scrollView)
@@ -788,12 +813,14 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
         if let page = page {
             currentPage = page
             self.previousPageNumber = page.pageNumber-1
+            self.lastPageNumber = self.currentPageNumber
             self.currentPageNumber = page.pageNumber
         } else {
             let currentIndexPath = getCurrentIndexPath()
             currentPage = collectionView.cellForItem(at: currentIndexPath) as? FolioReaderPage
 
             self.previousPageNumber = currentIndexPath.row
+            self.lastPageNumber = self.currentPageNumber
             self.currentPageNumber = currentIndexPath.row+1
         }
 

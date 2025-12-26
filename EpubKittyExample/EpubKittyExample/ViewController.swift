@@ -16,13 +16,42 @@ class ViewController: UIViewController,FolioReaderPageDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        let button = UIButton(frame: CGRect(x: 50, y: 150, width: 200, height: 40))
+        button.setTitle("Open EPDF", for: .normal)
+        button.backgroundColor = .red
+        button.addTarget(self, action: #selector(openPDF), for: .touchUpInside)
+        view.addSubview(button)
         
+//        self.config = EpubConfig.init(Identifier: "Identifier",
+//                                      tintColor: UIColor.green,
+//                                      allowSharing: false,
+//                                      scrollDirection: "horizontal")
+//
+//        //let readerVc = UIApplication.shared.keyWindow!.rootViewController ?? UIViewController()
+//        let epubPath = Bundle.main.path(forResource: "kapalam", ofType: "epub") ?? ""
+//        //print("##READER VC : \(readerVc)")
+//        print("##EPUB PATH :\(epubPath)")
+//        print("##SELF :\(self)")
+//        
+//        folioReader.presentReader(parentViewController: self, withEpubPath: epubPath, andConfig: self.config!.config, shouldRemoveEpub: true)
+        print("##Loaded")
+          
+    }
+    
+    @objc func openPDF() {
+        self.config = EpubConfig.init(Identifier: "Identifier",
+                                      tintColor: UIColor.green,
+                                      allowSharing: false,
+                                      scrollDirection: "horizontal")
+
+        //let readerVc = UIApplication.shared.keyWindow!.rootViewController ?? UIViewController()
+        let epubPath = Bundle.main.path(forResource: "kapalam", ofType: "epub") ?? ""
+        //print("##READER VC : \(readerVc)")
+        print("##EPUB PATH :\(epubPath)")
+        print("##SELF :\(self)")
         
-//        self.config = EpubConfig.init(Identifier: "Identifier",tintColor: "color",allowSharing: allowSharing,scrollDirection: scrollDirection)
-//
-//
-//        folioReader.presentReader(parentViewController: readerVc, withEpubPath: epubPath, andConfig: self.config!.config, shouldRemoveEpub: true)
-          folioReader.readerCenter?.pageDelegate = self
+        folioReader.presentReader(parentViewController: self, withEpubPath: epubPath, andConfig: self.config!.config, shouldRemoveEpub: true)
+        folioReader.readerCenter?.pageDelegate = self
     }
 
 

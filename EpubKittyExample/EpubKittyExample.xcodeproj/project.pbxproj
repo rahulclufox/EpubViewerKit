@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,10 +11,10 @@
 		35EE6D16242C541000ACB355 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35EE6D15242C541000ACB355 /* SceneDelegate.swift */; };
 		35EE6D18242C541000ACB355 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35EE6D17242C541000ACB355 /* ViewController.swift */; };
 		35EE6D1B242C541000ACB355 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 35EE6D19242C541000ACB355 /* Main.storyboard */; };
-		35EE6D1D242C541200ACB355 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35EE6D1C242C541200ACB355 /* Assets.xcassets */; };
 		35EE6D20242C541200ACB355 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 35EE6D1E242C541200ACB355 /* LaunchScreen.storyboard */; };
 		35EE6D28242C594A00ACB355 /* EpubConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35EE6D27242C594A00ACB355 /* EpubConfig.swift */; };
 		CD0B2BF7B02AB6D8FBBD246D /* libPods-EpubKittyExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7ACE1A47597DF9E4BA8F8B25 /* libPods-EpubKittyExample.a */; };
+		F8FC7F3F2EEFCE2700EB3289 /* kapalam.epub in Resources */ = {isa = PBXBuildFile; fileRef = F8FC7F3E2EEFCE2700EB3289 /* kapalam.epub */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +30,7 @@
 		35EE6D27242C594A00ACB355 /* EpubConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EpubConfig.swift; sourceTree = "<group>"; };
 		6940B8CA77A909445102A283 /* Pods-EpubKittyExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EpubKittyExample.release.xcconfig"; path = "Target Support Files/Pods-EpubKittyExample/Pods-EpubKittyExample.release.xcconfig"; sourceTree = "<group>"; };
 		7ACE1A47597DF9E4BA8F8B25 /* libPods-EpubKittyExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EpubKittyExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F8FC7F3E2EEFCE2700EB3289 /* kapalam.epub */ = {isa = PBXFileReference; lastKnownFileType = file; path = kapalam.epub; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +70,7 @@
 				35EE6D13242C541000ACB355 /* AppDelegate.swift */,
 				35EE6D15242C541000ACB355 /* SceneDelegate.swift */,
 				35EE6D17242C541000ACB355 /* ViewController.swift */,
+				F8FC7F3E2EEFCE2700EB3289 /* kapalam.epub */,
 				35EE6D19242C541000ACB355 /* Main.storyboard */,
 				35EE6D1C242C541200ACB355 /* Assets.xcassets */,
 				35EE6D1E242C541200ACB355 /* LaunchScreen.storyboard */,
@@ -155,8 +157,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				35EE6D20242C541200ACB355 /* LaunchScreen.storyboard in Resources */,
-				35EE6D1D242C541200ACB355 /* Assets.xcassets in Resources */,
 				35EE6D1B242C541000ACB355 /* Main.storyboard in Resources */,
+				F8FC7F3F2EEFCE2700EB3289 /* kapalam.epub in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
