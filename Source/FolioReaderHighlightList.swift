@@ -87,7 +87,7 @@ class FolioReaderHighlightList: UITableViewController {
         let textColor = self.folioReader.isNight(self.readerConfig.menuTextColor, UIColor.black)
 
         text.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraph, range: range)
-        text.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "EGRevathi", size: 16)!, range: range)
+        text.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "Avenir-Light", size: 16)!, range: range)
         text.addAttribute(NSAttributedString.Key.foregroundColor, value: textColor, range: range)
 
         if (highlight.type == HighlightStyle.underline.rawValue) {
@@ -152,7 +152,7 @@ class FolioReaderHighlightList: UITableViewController {
         let paragraph = NSMutableParagraphStyle()
         paragraph.lineSpacing = 3
         text.addAttribute(NSAttributedString.Key.paragraphStyle, value: paragraph, range: range)
-        text.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "EGRevathi", size: 16)!, range: range)
+        text.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "Avenir-Light", size: 16)!, range: range)
         
 
         let s = text.boundingRect(with: CGSize(width: view.frame.width-40, height: CGFloat.greatestFiniteMagnitude),

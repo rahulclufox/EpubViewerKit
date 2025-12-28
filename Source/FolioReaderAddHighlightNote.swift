@@ -7,7 +7,6 @@
 
 import UIKit
 import RealmSwift
-import WebKit
 
 class FolioReaderAddHighlightNote: UIViewController {
 
@@ -117,7 +116,7 @@ class FolioReaderAddHighlightNote: UIViewController {
         highlightLabel = UILabel()
         highlightLabel.translatesAutoresizingMaskIntoConstraints = false
         highlightLabel.numberOfLines = 3
-        highlightLabel.font = UIFont(name: "EGRevathi", size: 15) //UIFont.systemFont(ofSize: 15)
+        highlightLabel.font = UIFont.systemFont(ofSize: 15)
         highlightLabel.text = highlight.content.stripHtml().truncate(250, trailing: "...").stripLineBreaks()
         
         containerView.addSubview(self.highlightLabel!)
