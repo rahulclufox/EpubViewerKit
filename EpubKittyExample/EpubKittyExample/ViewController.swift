@@ -34,7 +34,6 @@ class ViewController: UIViewController,FolioReaderPageDelegate{
 //        print("##SELF :\(self)")
 //        
 //        folioReader.presentReader(parentViewController: self, withEpubPath: epubPath, andConfig: self.config!.config, shouldRemoveEpub: true)
-        print("##Loaded")
           
     }
     
@@ -47,8 +46,7 @@ class ViewController: UIViewController,FolioReaderPageDelegate{
         //let readerVc = UIApplication.shared.keyWindow!.rootViewController ?? UIViewController()
         let epubPath = Bundle.main.path(forResource: "kapalam", ofType: "epub") ?? ""
         //print("##READER VC : \(readerVc)")
-        print("##EPUB PATH :\(epubPath)")
-        print("##SELF :\(self)")
+
         
         folioReader.presentReader(parentViewController: self, withEpubPath: epubPath, andConfig: self.config!.config, shouldRemoveEpub: true)
         folioReader.readerCenter?.pageDelegate = self

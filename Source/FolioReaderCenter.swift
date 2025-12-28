@@ -73,6 +73,8 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
     var lastPageNumber: Int = 0
     var pageWidth: CGFloat = 0.0
     var pageHeight: CGFloat = 0.0
+    var bookmarkBtn: UIBarButtonItem!
+    var updateToBookmark: Bookmark?
 
     fileprivate var screenBounds: CGRect!
     fileprivate var pointNow = CGPoint.zero
@@ -285,6 +287,7 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
 
         let menu = UIBarButtonItem(image: closeIcon, style: .plain, target: self, action:#selector(closeReader(_:)))
         let toc = UIBarButtonItem(image: tocIcon, style: .plain, target: self, action:#selector(presentChapterList(_:)))
+        
 
         navigationItem.leftBarButtonItems = [menu, toc]
 
@@ -297,11 +300,35 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
         if self.book.hasAudio || self.readerConfig.enableTTS {
             rightBarIcons.append(UIBarButtonItem(image: audioIcon, style: .plain, target: self, action:#selector(presentPlayerMenu(_:))))
         }
+        
+        bookmarkBtn = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(bookMarkPage(_:)))
+        
+        if let bookId = (self.book.name as NSString?)?.deletingPathExtension,
+           let currentPage = self.currentPage, let webView = currentPage.webView {
+
+            if let _ = Bookmark.getByMatchingBookmark(withConfiguration: self.readerConfig, matchingBookmark: Bookmark.MatchingBookmark(bookId: bookId, pageNumber: self.currentPageNumber, pageOffsetX: Int(webView.scrollView.contentOffset.x), pageOffsetY: Int(webView.scrollView.contentOffset.y))) {
+                if #available(iOS 15.0, *) {
+                    bookmarkBtn.isSelected = true
+                    
+                } else {
+                    // Fallback on earlier versions
+                }
+                bookmarkBtn.tintColor = self.readerConfig.tintColor
+            } else {
+                if #available(iOS 15.0, *) {
+                    bookmarkBtn.isSelected = false
+                } else {
+                    // Fallback on earlier versions
+                }
+                let tintColor = folioReader.isNight(UIColor.white, UIColor.black) //readerConfig.tintColor // Using same as navtext colour
+                bookmarkBtn.tintColor = tintColor
+            }
+        }
 
         let font = UIBarButtonItem(image: fontIcon, style: .plain, target: self, action: #selector(presentFontsMenu))
-        font.width = space
+        //font.width = space
 
-        rightBarIcons.append(contentsOf: [font])
+        rightBarIcons.append(contentsOf: [font,bookmarkBtn])
         navigationItem.rightBarButtonItems = rightBarIcons
         
         if(self.readerConfig.displayTitle){
@@ -624,6 +651,30 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
 
         self.updatePageScrollDirection(inScrollView: scrollView, forScrollType: scrollType)
     }
+    
+    func updateBookmarkState() {
+        // Reseting
+        if #available(iOS 15.0, *) {
+            bookmarkBtn.isSelected = false
+        } else {
+            // Fallback on earlier versions
+        }
+        let tintColor = folioReader.isNight(UIColor.white, UIColor.black) //readerConfig.tintColor // Using same as navtext colour
+        bookmarkBtn.tintColor = tintColor
+        
+        if let bookId = (self.book.name as NSString?)?.deletingPathExtension,
+           let currentPage = self.currentPage, let webView = currentPage.webView {
+            if let _ = Bookmark.getByMatchingBookmark(withConfiguration: self.readerConfig, matchingBookmark: Bookmark.MatchingBookmark(bookId: bookId, pageNumber: self.currentPageNumber, pageOffsetX: Int(webView.scrollView.contentOffset.x), pageOffsetY: Int(webView.scrollView.contentOffset.y))) {
+                if #available(iOS 15.0, *) {
+                    bookmarkBtn.isSelected = true
+                } else {
+                    // Fallback on earlier versions
+                }
+                bookmarkBtn.tintColor = self.readerConfig.tintColor
+            }
+        }
+
+    }
 
     private func updatePageScrollDirection(inScrollView scrollView: UIScrollView, forScrollType scrollType: ScrollType) {
 
@@ -678,6 +729,8 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
             } else {
                 self?.scrollScrubber?.scrollViewDidEndDecelerating(scrollView)
             }
+            // Update bookmark state
+            self?.updateBookmarkState()
         })
     }
 
@@ -923,6 +976,22 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
                 }
             })
         }
+    }
+    
+    open func changePageWith(bookMark: Bookmark,animated: Bool = false, completion: (() -> Void)? = nil) {
+        if (currentPageNumber != bookMark.pageNumber) {
+            /// There is a chapter change, scroll to position once page is loaded
+            updateToBookmark = bookMark
+        }
+        self.changePageWith(page: bookMark.pageNumber) {
+            delay(0.2, closure: { [weak self] in
+                let pageOffsetPoint = CGPoint(x: bookMark.pageOffsetX, y: bookMark.pageOffsetY)
+                self?.currentPage?.webView?.scrollView.setContentOffset(pageOffsetPoint, animated: false)
+                self?.updateBookmarkState()
+            })
+        }
+        self.lastPageNumber = self.currentPageNumber
+        self.currentPageNumber = bookMark.pageNumber
     }
 
     open func changePageWith(href: String, animated: Bool = false, completion: (() -> Void)? = nil) {
@@ -1396,14 +1465,47 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
 
         let chapter = FolioReaderChapterList(folioReader: folioReader, readerConfig: readerConfig, book: book, delegate: self)
         let highlight = FolioReaderHighlightList(folioReader: folioReader, readerConfig: readerConfig)
+        let bookmarks = FolioReaderBookmarkList(folioReader: folioReader, readerConfig: readerConfig)
+        
         let pageController = PageViewController(folioReader: folioReader, readerConfig: readerConfig)
 
         pageController.viewControllerOne = chapter
         pageController.viewControllerTwo = highlight
-        pageController.segmentedControlItems = [readerConfig.localizedContentsTitle, readerConfig.localizedHighlightsTitle]
+        pageController.viewControllerThree = bookmarks
+        pageController.segmentedControlItems = [readerConfig.localizedContentsTitle, readerConfig.localizedHighlightsTitle, readerConfig.localizedBookmarksTitle]
 
         let nav = UINavigationController(rootViewController: pageController)
         present(nav, animated: true, completion: nil)
+    }
+    
+    /**
+     Bookmark
+     */
+    @objc func bookMarkPage(_ sender: UIBarButtonItem) {
+        if let bookId = (self.book.name as NSString?)?.deletingPathExtension,
+           let currentPage = self.currentPage, let webView = currentPage.webView {
+
+            if let bookMarked = Bookmark.getByMatchingBookmark(withConfiguration: self.readerConfig, matchingBookmark: Bookmark.MatchingBookmark(bookId: bookId, pageNumber: self.currentPageNumber, pageOffsetX: Int(webView.scrollView.contentOffset.x), pageOffsetY: Int(webView.scrollView.contentOffset.y))) {
+                /// Already bookmarked, so remove
+                Bookmark.removeById(withConfiguration: self.readerConfig, bookmarkId: bookMarked.bookmarkId)
+                if #available(iOS 15.0, *) {
+                    sender.isSelected = false
+                }
+                let tintColor = folioReader.isNight(UIColor.white, UIColor.black) //readerConfig.tintColor // Using same as navtext colour
+                sender.tintColor = tintColor
+                
+            } else {
+                /// Add new bookmark
+                let addBookMarkView = FolioReaderAddBookmark(withBookmarkInfo: Bookmark.MatchingBookmark(bookId: bookId, pageNumber: self.currentPageNumber, pageOffsetX: Int(webView.scrollView.contentOffset.x), pageOffsetY: Int(webView.scrollView.contentOffset.y)), folioReader: folioReader, readerConfig: readerConfig)
+
+                let nav = UINavigationController(rootViewController: addBookMarkView)
+                nav.modalPresentationStyle = .formSheet
+                
+                present(nav, animated: true, completion: nil)
+                
+                sender.tintColor = self.readerConfig.tintColor
+            }
+        }
     }
 
     /**
@@ -1510,6 +1612,17 @@ extension FolioReaderCenter: FolioReaderPageDelegate {
         if (readerConfig.scrollDirection == .horizontalWithVerticalContent),
             let offsetPoint = self.currentWebViewScrollPositions[page.pageNumber - 1] {
             page.webView?.scrollView.setContentOffset(offsetPoint, animated: false)
+        }
+        
+        if let bookMark = updateToBookmark {
+            let pageOffsetPoint = CGPoint(x: bookMark.pageOffsetX, y: bookMark.pageOffsetY)
+            if (page.webView?.scrollView.contentOffset.x ?? 0) != pageOffsetPoint.x || (page.webView?.scrollView.contentOffset.y ?? 0) != pageOffsetPoint.y {
+                delay(0.2, closure: { [weak self] in
+                    page.webView?.scrollView.setContentOffset(pageOffsetPoint, animated: false)
+                    self?.updateBookmarkState()
+                    self?.updateToBookmark = nil
+                })
+            }
         }
         
         // Pass the event to the centers `pageDelegate`

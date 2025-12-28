@@ -185,6 +185,9 @@ open class FolioReaderConfig: NSObject {
 
     /// Localizes Content title
     open var localizedContentsTitle = NSLocalizedString("Contents", comment: "")
+    
+    /// Localizes Bookmarks title
+    open var localizedBookmarksTitle = NSLocalizedString("Bookmarks", comment: "")
 
     /// Use the readers `UIMenuController` which enables the highlighting etc. The default is `true`. If set to false it's possible to modify the shared `UIMenuController` for yourself. Note: This doesn't disable the text selection in the web view.
     open var useReaderMenuController = true
