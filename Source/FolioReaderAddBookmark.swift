@@ -31,7 +31,8 @@ class FolioReaderAddBookmark: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        setCloseButton(withConfiguration: readerConfig)
+        let tintColor = folioReader.isNight(UIColor.white, UIColor.black)
+        setCloseButton(withConfiguration: readerConfig, tintColor: tintColor)
         prepareContentView()
         configureTextField()
         configureNavBar()
@@ -59,6 +60,7 @@ class FolioReaderAddBookmark: UIViewController {
         textField.delegate = self
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Bookmark name"
+        textField.attributedPlaceholder = NSAttributedString(string: "Bookmark name", attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
         textField.textColor = .black
         textField.backgroundColor = .clear
         textField.font = UIFont.boldSystemFont(ofSize: 15)
@@ -74,12 +76,13 @@ class FolioReaderAddBookmark: UIViewController {
     
     private func configureNavBar() {
         let navBackground = folioReader.isNight(self.readerConfig.nightModeNavBackground, self.readerConfig.daysModeNavBackground)
-        let tintColor = readerConfig.tintColor
+        //let tintColor = readerConfig.tintColor
+        let tintColor = folioReader.isNight(UIColor.white, UIColor.black)
         let navText = folioReader.isNight(UIColor.white, UIColor.black)
         let font = UIFont(name: "Avenir-Light", size: 17)!
         setTranslucentNavigation(false, color: navBackground, tintColor: tintColor, titleColor: navText, andFont: font)
         
-        let titleAttrs = [NSAttributedString.Key.foregroundColor: readerConfig.tintColor]
+        let titleAttrs = [NSAttributedString.Key.foregroundColor: tintColor]
         let saveButton = UIBarButtonItem(title: readerConfig.localizedSave, style: .plain, target: self, action: #selector(saveBookmark(_:)))
         saveButton.setTitleTextAttributes(titleAttrs, for: UIControl.State())
         navigationItem.rightBarButtonItem = saveButton

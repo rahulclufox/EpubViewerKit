@@ -65,8 +65,8 @@ class PageViewController: UIPageViewController {
                 scroll.bounces = false
             }
         }
-
-        self.setCloseButton(withConfiguration: self.readerConfig)
+        let tintColor = folioReader.isNight(UIColor.white, UIColor.black)
+        self.setCloseButton(withConfiguration: self.readerConfig, tintColor: tintColor)
     }
 
     override func viewWillAppear(_ animated: Bool) {

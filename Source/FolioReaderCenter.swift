@@ -103,13 +103,13 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
 
     open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
       super.traitCollectionDidChange(previousTraitCollection)
-        if #available(iOS 12.0, *) {
-            if self.traitCollection.userInterfaceStyle == .dark {
-              folioReader.nightMode = true
-            }else{
-                folioReader.nightMode = false
-            }
-        }
+//        if #available(iOS 12.0, *) {
+//            if self.traitCollection.userInterfaceStyle == .dark {
+//              folioReader.nightMode = true
+//            }else{
+//                folioReader.nightMode = false
+//            }
+//        }
     }
 
     init(withContainer readerContainer: FolioReaderContainer) {
@@ -283,6 +283,8 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
         let closeIcon = UIImage(readerImageNamed: "icon-navbar-close")?.imageTintColor(tintColor) //.ignoreSystemTint(withConfiguration: self.readerConfig)
         let tocIcon = UIImage(readerImageNamed: "icon-navbar-toc")?.imageTintColor(tintColor) //.ignoreSystemTint(withConfiguration: self.readerConfig)
         let fontIcon = UIImage(readerImageNamed: "icon-navbar-font")?.imageTintColor(tintColor) //.ignoreSystemTint(withConfiguration: self.readerConfig)
+        let bookmarkIcon = UIImage(readerImageNamed: "icon-navbar-bookmark")?.imageTintColor(tintColor)
+        
         let space = 70 as CGFloat
 
         let menu = UIBarButtonItem(image: closeIcon, style: .plain, target: self, action:#selector(closeReader(_:)))
@@ -301,7 +303,8 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
             rightBarIcons.append(UIBarButtonItem(image: audioIcon, style: .plain, target: self, action:#selector(presentPlayerMenu(_:))))
         }
         
-        bookmarkBtn = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(bookMarkPage(_:)))
+        bookmarkBtn = UIBarButtonItem(image: bookmarkIcon, style: .plain, target: self, action:#selector(bookMarkPage(_:)))
+        //UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(bookMarkPage(_:)))
         
         if let bookId = (self.book.name as NSString?)?.deletingPathExtension,
            let currentPage = self.currentPage, let webView = currentPage.webView {
@@ -313,7 +316,7 @@ open class FolioReaderCenter: UIViewController, UICollectionViewDelegate, UIColl
                 } else {
                     // Fallback on earlier versions
                 }
-                bookmarkBtn.tintColor = self.readerConfig.tintColor
+                bookmarkBtn.tintColor = UIColor.lightGray// self.readerConfig.tintColor
             } else {
                 if #available(iOS 15.0, *) {
                     bookmarkBtn.isSelected = false

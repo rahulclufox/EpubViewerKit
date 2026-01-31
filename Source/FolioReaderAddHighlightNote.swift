@@ -39,7 +39,9 @@ class FolioReaderAddHighlightNote: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setCloseButton(withConfiguration: readerConfig)
+        let tintColor = folioReader.isNight(UIColor.white, UIColor.black)
+        
+        setCloseButton(withConfiguration: readerConfig, tintColor: tintColor)
         prepareScrollView()
         configureTextView()
         configureLabel()
@@ -131,12 +133,13 @@ class FolioReaderAddHighlightNote: UIViewController {
     
     private func configureNavBar() {
         let navBackground = folioReader.isNight(self.readerConfig.nightModeNavBackground, self.readerConfig.daysModeNavBackground)
-        let tintColor = readerConfig.tintColor
+        //let tintColor = readerConfig.tintColor
+        let tintColor = folioReader.isNight(UIColor.white, UIColor.black)
         let navText = folioReader.isNight(UIColor.white, UIColor.black)
         let font = UIFont(name: "Avenir-Light", size: 17)!
         setTranslucentNavigation(false, color: navBackground, tintColor: tintColor, titleColor: navText, andFont: font)
         
-        let titleAttrs = [NSAttributedString.Key.foregroundColor: readerConfig.tintColor]
+        let titleAttrs = [NSAttributedString.Key.foregroundColor: tintColor]
         let saveButton = UIBarButtonItem(title: readerConfig.localizedSave, style: .plain, target: self, action: #selector(saveNote(_:)))
         saveButton.setTitleTextAttributes(titleAttrs, for: UIControl.State())
         navigationItem.rightBarButtonItem = saveButton
